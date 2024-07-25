@@ -21,7 +21,7 @@ This will create the library "libtof_cam.so" and the executables [tof_save](src/
 
     python3 tof_cam.py
 
-All these programs make use of the C++ base class [jhcTofCam](src/jhcTofCam.cpp). This contains the USB serial interface, background image processing, and an automatic range-step setting algorithm. Generally, for image analysis such as object detection, you will want to use the image returned by "Range" (also in Python). This is a 100x100 pixel image with 16 bit depth values in increments of 0.25mm (similar to Kinect 360). The sensor itself can see from about 50mm (2 inches) to 2.4m (8 feet). 
+All these programs make use of the C++ base class [jhcTofCam](src/jhcTofCam.cpp). This contains the USB serial interface, background image processing, and an automatic range-step setting algorithm. Generally, for image analysis such as object detection, you will want to use the image returned by "Range" (also in Python). This is a 100x100 pixel image with 16 bit depth values in increments of 0.25mm (similar to Kinect 360). The sensor itself can see from about 50mm (2 inches) to 2.4m (8 feet) at runs at about 15 fps.
 
 __Note:__ The onboard Raspberry USB hub is quirky. If you happen to plug in a [Waveshare USB sound card](https://www.amazon.com/gp/product/B08R38TXXL) it will crash the  TOF sensor! The solution is to add  a [USB splitter](https://www.amazon.com/dp/B07ZZ9ZSW9) (or hub) and plug one or the other (or both) peripherals into this instead.
 
