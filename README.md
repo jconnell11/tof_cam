@@ -7,7 +7,7 @@
 
 ![depth slices](seq_compare.bmp)
 
-This scene is from 180mm above a table (yes, it images that close) of a 20mm block and a 60mm bottle. The pixel values are inverted so closer things appear brighter. There are 3 horizontal depth slices taken through the image: one across the bottle (green), one across the block (red), and one of the table (cyan). The goal is to be able to separate the objects from the surface they are resting on. As can be seen on the left, the original image does not have very distinct depth boundaries (and the values wiggle over time). However, after processing, the image on the left has a much smoother (and stable) ground plane which makes detection much easier.
+This scene is from 180mm above a table (yes, it images that close) of a 20mm block and a 60mm bottle. The pixel values are inverted so closer things appear brighter. There are 3 horizontal depth slices taken through the image: one across the bottle (green), one across the block (red), and one of the table (cyan). The goal is to be able to separate the objects from the surface they are resting on. As can be seen on the left, the original image does not have very distinct depth boundaries (and the values wiggle over time). However, after processing, the image on the right has a much smoother (and stable) ground plane which makes detection much easier.
 
 ### Using the Library
 
@@ -17,7 +17,7 @@ This system was developed for a [robot](https://github.com/jconnell11/Ganbei) wi
     cmake .
     make
 
-This will create the library "libtof_cam.so" and the executables [tof_save](src/tof_save.cpp) and [tof_show](src/tof_show.cpp). The save utility will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast the show utility will pop up 4 windows showing live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system which will produce OpenCV images. You can run a simple test of this by typing:
+This will create the library "libtof_cam.so" and the executables [tof_save](src/tof_save.cpp) and [tof_show](src/tof_show.cpp). The save utility will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the show utility will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing:
 
     python3 tof_cam.py
 
