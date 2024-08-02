@@ -196,7 +196,7 @@ void jhcTofCam::pwr_cycle () const
 // typically 14.8 fps, image guaranteed unchanged until next Range() call
 // returns pixel buffer pointer, NULL if not ready or stream broken
 
-unsigned char *jhcTofCam::Range (int block)
+const unsigned char *jhcTofCam::Range (int block)
 {
   int wait = 0;
 
@@ -605,7 +605,7 @@ void jhcTofCam::depth_step ()
 // "sh" sets max range: 0 = 25cm, 1 = 51cm, 2 = 102cm, 3 = 204cm, 4 = 409cm 
 // Note: must call Range(1) first to update source image to converter
 
-unsigned char *jhcTofCam::Night (int sh)
+const unsigned char *jhcTofCam::Night (int sh)
 {
   int i, v, dn = sh + 2;
   unsigned char *d = nite;

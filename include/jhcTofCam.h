@@ -87,15 +87,15 @@ public:
 
   // main functions
   int Start ();
-  unsigned char *Range (int block =0);
+  const unsigned char *Range (int block =0);
   void Done ();
 
   // debugging functions (not sync'd with background)
   int Step () const {return unit;}
-  unsigned char *Sensor () const {return raw;}
-  unsigned char *Median () const {return((unsigned char *) med);}
-  unsigned char *Kalman () const {return((unsigned char *) avg);}
-  unsigned char *Night (int sh =0);
+  const unsigned char *Sensor () const {return raw;}
+  const unsigned char *Median () const {return((unsigned char *) med);}
+  const unsigned char *Kalman () const {return((unsigned char *) avg);}
+  const unsigned char *Night (int sh =0);
 
 
 // PRIVATE MEMBER FUNCTIONS

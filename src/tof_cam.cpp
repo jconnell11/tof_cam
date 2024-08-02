@@ -51,7 +51,7 @@ extern "C" int tof_start ()
 // typically 14.8 fps, image guaranteed unchanged until next Range() call
 // returns pixel buffer pointer, NULL if not ready or stream broken
 
-extern "C" unsigned char *tof_range (int block)
+extern "C" const unsigned char *tof_range (int block)
 {
   return tof.Range(block);
 }
@@ -80,7 +80,7 @@ extern "C" int tof_step ()
 //= Get current raw sensor image for debugging.
 // Note: image used by processing - do not alter pixels!
 
-extern "C" unsigned char *tof_sensor () 
+extern "C" const unsigned char *tof_sensor () 
 {
   return tof.Sensor();
 }
@@ -90,7 +90,7 @@ extern "C" unsigned char *tof_sensor ()
 // spatial filtering removes edge artifacts and shot noise
 // Note: image used by processing - do not alter pixels!
 
-extern "C" unsigned char *tof_median ()
+extern "C" const unsigned char *tof_median ()
 {
   return tof.Median();
 }
@@ -100,7 +100,7 @@ extern "C" unsigned char *tof_median ()
 // temporal filtering removes flickering and waves
 // Note: image used by processing - do not alter pixels!
 
-extern "C" unsigned char *tof_kalman () 
+extern "C" const unsigned char *tof_kalman () 
 {
   return tof.Kalman();
 }
@@ -110,7 +110,7 @@ extern "C" unsigned char *tof_kalman ()
 // "sh" sets max range: 0 = 25cm, 1 = 51cm, 2 = 102cm, 3 = 204cm, 4 = 409cm 
 // Note: must call Range(1) first to update source image to converter
 
-extern "C" unsigned char *tof_night (int sh)
+extern "C" const unsigned char *tof_night (int sh)
 {
   return tof.Night(sh);
 }
