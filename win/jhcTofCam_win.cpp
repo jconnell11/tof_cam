@@ -1,4 +1,4 @@
-// jhcTofCam.cpp : interface to Sipeed MaixSense A010 Time-of-Flight sensor
+// jhcTofCam_win.cpp : interface to Sipeed MaixSense A010 Time-of-Flight sensor
 //
 // Written by Jonathan H. Connell, jconnell@alum.mit.edu
 //
@@ -23,11 +23,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
-#include <termios.h>
-#include <unistd.h>
 #include <string.h>
 
-#include <jhcTofCam.h>
+#include "jhcTofCam_win.h"
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -62,7 +60,7 @@ jhcTofCam::jhcTofCam ()
   ch  = 50;
 
   // temporal smoothing
-  f0 = 0.1;                            // estimate time constant
+  f0 = 0.1f;                           // estimate time constant
   nv = 64.0;                           // expect 3 bits noise (8^2)
   vlim = 32;                           // too much flicker
 
@@ -99,17 +97,13 @@ int jhcTofCam::Start (int port)
 {
   // establish USB serial connection
   ok = -1;
-  if (open_usb() <= 0)
-  {
-    pwr_cycle();                       // re-initialize
-    if (open_usb() <= 0)
-      return ok;
-  }
+  if (ser.SetSource(port, 115200) <= 0)
+    return ok;
 
   // configure and start sensor
-  write(ser, "AT+DISP=3\r", 10);       // needs live display!
-  usleep(50000);                       // 50ms min between commands
-  write(ser, "AT+UNIT=2\r", 10);       // 2mm depth step                 
+  ser.TxArray((UC8 *)"AT+DISP=3\r", 10);         // needs live display!
+  Sleep(50);                                     // 50ms min between commands
+  ser.TxArray((UC8 *)"AT+UNIT=2\r", 10);         // 2mm depth step                 
   unit = 2;
   pend = 2;   
 
@@ -124,70 +118,6 @@ int jhcTofCam::Start (int port)
   pthread_create(&hoover, NULL, absorb, (void *) this);
   ok = 1;
   return ok;
-}
-
-
-//= Try opening USB connection to sensor as a serial port.
-// binds "ser" to port and sets overall "ok" flag
-// returns 1 if okay, 0 or negative for error
-
-int jhcTofCam::open_usb ()
-{
-  struct termios tty;
-
-  // open USB connection to camera
-  ser = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
-  if (ser < 0)
-    return -1;
-  fcntl(ser, F_SETFL, 0);              // clear status
-  if (tcgetattr(ser, &tty) != 0) 
-    return 0;
-
-  // basic characteristics  
-  tty.c_cflag &= ~PARENB;              // no parity bit
-  tty.c_cflag &= ~CSTOPB;              // one stop bit 
-  tty.c_cflag &= ~CSIZE;               // 8 bit data
-  tty.c_cflag |= CS8;      
-  tty.c_cflag &= ~CRTSCTS;             // no RTS/CTS 
-  tty.c_cflag |= (CREAD | CLOCAL);     // turn on receiver
-
-  // disable basic terminal functions
-  tty.c_lflag &= ~ICANON;
-  tty.c_lflag &= ~ECHO;                // no echo
-  tty.c_lflag &= ~ECHOE;               // no erase editing
-  tty.c_lflag &= ~ECHONL;              // no new-line echo
-  tty.c_lflag &= ~ISIG;                // disable INTR, QUIT and SUSP
-
-  // disable fancier terminal functions
-  tty.c_iflag &= ~(IXON | IXOFF | IXANY);       
-  tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL);  
-  tty.c_oflag &= ~OPOST;  
-  tty.c_oflag &= ~ONLCR;  
-
-  // set timeouts and baudrate
-  tty.c_cc[VMIN] = 0;                  // don't block if none
-  tty.c_cc[VTIME] = 10;                // 1 sec read timeout
-  cfsetspeed(&tty, 115200u);           // irrelevant
-
-  // apply settings
-  if (tcsetattr(ser, TCSANOW, &tty) != 0) 
-    return 0;
-  return 1;
-}
-
-
-//= Recycle FTDI driver then reboot sensor itself. 
-// must do "sudo apt install uhubctl" for Raspberry Pi 4
-// Note: power cycles ALL devices connected via USB!
-
-void jhcTofCam::pwr_cycle () const
-{
-  printf(">>> jhcTofCam: Rebooting sensor connection ...\n");
-  system("sudo modprobe -r ftdi_sio");
-  system("sudo modprobe ftdi_sio");
-  system("sudo uhubctl -l2 -a0 > /dev/null");   
-  system("sudo uhubctl -l2 -a1 > /dev/null");
-  sleep(3);
 }
 
 
@@ -210,7 +140,7 @@ const unsigned char *jhcTofCam::Range (int block)
       return NULL;
     if (wait++ > 500)                  // barf after 0.5 sec
       return NULL;
-    usleep(1000);                      // 1 ms loop
+    Sleep(1);                          // 1 ms loop
   }
 
   // swap buffers to be sure output pointer remains valid
@@ -234,13 +164,12 @@ void jhcTofCam::Done ()
   }
 
   // stop transmitter and release serial port
-  if (ser >= 0)
+  if (ser.Valid() > 0)
   {
-    write(ser, "AT+UNIT=0\r", 10);     // stretched depth
-    usleep(50000);
-    write(ser, "AT+DISP=1\r", 10);
-    close(ser);
-    ser = -1;
+    ser.TxArray((UC8 *)"AT+UNIT=0\r", 10);       // stretched depth
+    Sleep(50);
+    ser.TxArray((UC8 *)"AT+DISP=1\r", 10);
+    ser.Close();
   }
 
   // mark as un-initialized
@@ -255,7 +184,7 @@ void jhcTofCam::Done ()
 //= Background thread continually receives serial bytes into raw buffers.
 // also automatically adjusts range resolution and filters pixels
 
-void *jhcTofCam::absorb (void *tof)
+pthread_ret jhcTofCam::absorb (void *tof)
 {
   jhcTofCam *me = (jhcTofCam *) tof;
 
@@ -298,21 +227,21 @@ int jhcTofCam::sync ()
   {      
     // start code = 0x00 0xFF
     start++;
-    if (read(ser, &b, 1) <= 0)
+    if ((b = ser.Rcv()) < 0)
       return 0;
     if (b != 0x00)
       continue;
-    if (read(ser, &b, 1) <= 0)
+    if ((b = ser.Rcv()) < 0)
       return 0;
     if (b != 0xFF)
       continue;
 
     // packet length 10016 = 0x2720 (little-endian)
-    if (read(ser, &b, 1) <= 0)
+    if ((b = ser.Rcv()) < 0)
       return 0;
     if (b != 0x20)
       continue;
-    if (read(ser, &b, 1) <= 0)
+    if ((b = ser.Rcv()) < 0)
       return 0;
     if (b == 0x27)
       break;
@@ -335,13 +264,13 @@ int jhcTofCam::fill_raw ()
 
   while (1)
   {
-    rc = read(ser, pkt + n, 10018 - n);
+    rc = ser.RxArray(pkt + n, 10018 - n);   
     if (rc <= 0)
       return 0;                        // timeout
     n += rc;
     if (n >= 10018) 
       break;
-    usleep(17500);                     // accumulate more bytes
+    Sleep(18);                         // accumulate more bytes
   }
   return 1;
 }
@@ -566,7 +495,7 @@ void jhcTofCam::auto_range ()
   {
     pend = goal;
     cmd[8] = '0' + pend;
-    write(ser, cmd, 10);               // needs confirmation
+    ser.TxArray((UC8 *) cmd, 10);                // needs confirmation
   }
 }
 

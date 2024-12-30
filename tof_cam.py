@@ -28,9 +28,15 @@
 import numpy as np, cv2, os, sys
 from ctypes import CDLL, POINTER, c_ubyte
 
+# serial port number (only matters for Windows)
+port = 5
+
 # bind shared library
 here = os.path.dirname(__file__)       
-lib = CDLL(here + '/libtof_cam.so')  
+if sys.platform == 'win32':
+  lib = CDLL(here + '/tof_cam.dll')                  # Windows
+else:
+  lib = CDLL(here + '/libtof_cam.so')                # Linux
 
 # define return types of image functions 
 lib.tof_range.restype  = POINTER(c_ubyte * 20000)    # 16 bit pels
@@ -48,7 +54,7 @@ class TofCam:
   # returns 1 if okay, 0 or negative for problem
 
   def Start(self):
-    return lib.tof_start()
+    return lib.tof_start(port)
 
 
   # get 16 bit range image, possibly waiting for new frame (block = 1)

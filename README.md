@@ -27,8 +27,18 @@ The returned image is 100x100 pixels with 16 bit depth values in increments of 0
 
 Note: If you happen to use this on Raspberry Pi be aware that the onboard USB hub is quirky. Plugging in a [Waveshare USB sound card](https://www.amazon.com/gp/product/B08R38TXXL) will crash the TOF sensor! The solution is to add  a [USB splitter](https://www.amazon.com/dp/B07ZZ9ZSW9) (or hub) and plug one or the other (or both) peripherals into this instead.
 
+### Windows
+
+There is a DLL version that runs with Windows, however you need to find the serial port associated with your sensor. Plug it into a USB port then open Device Manager and look for a pair of non-descript "Ports". In [tof_cam.py](tof_cam.py) set the "port" variable to the lower of these two numbers (or set "tof_cam.port" in your main program). 
+
+To run the demo open a terminal window, cd to the "tof_cam" directory, then type the command below. The argument (1-4) sets the maximum range for the grayscale image.  Note that to display images you also need to have [OpenCV](https://opencv.org/releases/) installed (the "Windows" version, obviously).
+
+    py tof_cam.py 1
+
+If you want to make changes to the DLL, the [win](win) directory has the associated Visual Studio Community 2022 project ("tof_cam.sln") and source files. Be sure to move any new DLL version to the top level directory when done.  
+
 ---
 
-August 2024 - Jonathan Connell - jconnell@alum.mit.edu
+December 2024 - Jonathan Connell - jconnell@alum.mit.edu
 
 

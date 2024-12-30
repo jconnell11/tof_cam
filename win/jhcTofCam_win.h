@@ -1,4 +1,4 @@
-// jhcTofCam.h : interface to Sipeed MaixSense A010 Time-of-Flight sensor
+// jhcTofCam_win.h : interface to Sipeed MaixSense A010 Time-of-Flight sensor
 //
 // Written by Jonathan H. Connell, jconnell@alum.mit.edu
 //
@@ -22,7 +22,9 @@
 
 #pragma once
 
-#include <pthread.h>
+#include "jhc_pthread.h"
+
+#include "Interface/jhcSerial.h"
 
 
 //= Interface to Sipeed MaixSense A010 Time-of-Flight sensor.
@@ -35,7 +37,8 @@ class jhcTofCam
 // PRIVATE MEMBER VARIABLES
 private:
   // camera connection and health
-  int ser, ok;  
+  jhcSerial ser;
+  int ok;  
 
   // background receiver and pre-processing
   pthread_t hoover;
@@ -86,7 +89,7 @@ public:
   jhcTofCam ();
 
   // main functions
-  int Start (int port =0);
+  int Start (int port =5);
   const unsigned char *Range (int block =0);
   void Done ();
 
@@ -103,12 +106,8 @@ private:
   // creation and initialization
   void build_lut ();
 
-  // main functions
-  int open_usb ();
-  void pwr_cycle () const;
-
   // background thread functions
-  static void *absorb (void *tof);
+  static pthread_ret absorb (void *tof);
   int sync ();
   int fill_raw ();
   void swap_bufs ();
