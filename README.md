@@ -35,10 +35,10 @@ To run the demo open a terminal window, cd to the "tof_cam" directory, then type
 
     py tof_cam.py 1
 
-If you want to make changes to the DLL, the [win](win) directory has the associated Visual Studio Community 2022 project ("tof_cam.sln") and source files. Be sure to move any new DLL version to the top level directory when done.  
+If you want to make changes to the DLL, the [win](win) directory has the associated Visual Studio Community 2022 project ("tof_cam.sln") and source files. Be sure to compile the "Release" configuration and move any new DLL version to your application "lib" subdirectory when done.  
 
 ---
 
-December 2024 - Jonathan Connell - jconnell@alum.mit.edu
+January 2025 - Jonathan Connell - jconnell@alum.mit.edu
 
 

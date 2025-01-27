@@ -9,7 +9,7 @@
 #
 # =========================================================================
 #
-# Copyright 2024 Etaoin Systems
+# Copyright 2024-2025 Etaoin Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 # =========================================================================
 
 import numpy as np, cv2, os, sys
-from ctypes import CDLL, POINTER, c_ubyte
+from ctypes import CDLL, POINTER, cast, c_ubyte, c_void_p
 
 # serial port number (only matters for Windows)
 port = 5
@@ -34,16 +34,16 @@ port = 5
 # bind shared library
 here = os.path.dirname(__file__)       
 if sys.platform == 'win32':
-  lib = CDLL(here + '/tof_cam.dll')                  # Windows
+  lib = CDLL(here + '/lib/tof_cam.dll')              # Windows
 else:
-  lib = CDLL(here + '/libtof_cam.so')                # Linux
+  lib = CDLL(here + '/lib/libtof_cam.so')            # Linux
 
-# define return types of image functions 
-lib.tof_range.restype  = POINTER(c_ubyte * 20000)    # 16 bit pels
-lib.tof_sensor.restype = POINTER(c_ubyte * 10000)
-lib.tof_median.restype = POINTER(c_ubyte * 10000)
-lib.tof_kalman.restype = POINTER(c_ubyte * 10000)
-lib.tof_night.restype  = POINTER(c_ubyte * 10000)
+# define return types of image functions (buffer pointers)
+lib.tof_range.restype  = c_void_p
+lib.tof_sensor.restype = c_void_p
+lib.tof_median.restype = c_void_p
+lib.tof_kalman.restype = c_void_p
+lib.tof_night.restype  = c_void_p
 
 
 # Python wrapper for A010 Time-of-Flight camera interface
@@ -59,7 +59,7 @@ class TofCam:
 
   # get 16 bit range image, possibly waiting for new frame (block = 1)
   # image is 100x100 pixels with depth in 0.25mm steps
-  # image fmt: 0 = bytearray, 1 = OpenCV Mat (numpy ndarray)
+  # image fmt: 0 = buffer pointer (int), 1 = OpenCV Mat (numpy ndarray)
   # returns pointer to image or None if not ready or broken
 
   def Range(self, block =0, fmt =1):
@@ -72,11 +72,13 @@ class TofCam:
     if not ptr:
       return None
     if fmt <= 0:
-      return ptr.contents
+      return ptr             # int = memory address
     if bits == 16:
-      img = np.frombuffer(ptr.contents, np.uint16)
+      buf = cast(ptr, POINTER(c_ubyte * 20000))
+      img = np.frombuffer(buf.contents, np.uint16)
     else:
-      img = np.frombuffer(ptr.contents, np.uint8)
+      buf = cast(ptr, POINTER(c_ubyte * 10000))
+      img = np.frombuffer(buf.contents, np.uint8)
     img.shape = (100, 100, 1)
     return img
 
@@ -96,7 +98,7 @@ class TofCam:
 
 
   # get current raw sensor image for debugging
-  # image fmt: 0 = bytearray, 1 = OpenCV Mat (numpy ndarray)
+  # image fmt: 0 = buffer pointer (int), 1 = OpenCV Mat (numpy ndarray)
 
   def Sensor(self, fmt =1):
     return self.fmt_pels(lib.tof_sensor(), fmt)
@@ -104,7 +106,7 @@ class TofCam:
 
   # get current median filtered image for debugging
   # spatial filtering removes edge artifacts and shot noise
-  # image fmt: 0 = bytearray, 1 = OpenCV Mat (numpy ndarray) 
+  # image fmt: 0 = buffer pointer (int), 1 = OpenCV Mat (numpy ndarray) 
 
   def Median(self, fmt =1):
     return self.fmt_pels(lib.tof_median(), fmt)
@@ -112,7 +114,7 @@ class TofCam:
 
   # get current Kalman filtered image for debugging
   # temporal filtering removes flickering and waves
-  # image fmt: 0 = bytearray, 1 = OpenCV Mat (numpy ndarray)
+  # image fmt: 0 = buffer pointer (int), 1 = OpenCV Mat (numpy ndarray)
 
   def Kalman(self, fmt =1):
     return self.fmt_pels(lib.tof_kalman(), fmt)
@@ -120,7 +122,7 @@ class TofCam:
 
   # get inverted 8 bit version depth image where bright means close 
   # max range from shift: 0 = 25cm, 1 = 50cm, 2 = 1m, 3 = 2m, 4 = 4m 
-  # image fmt: 0 = bytearray, 1 = OpenCV Mat (numpy ndarray)
+  # image fmt: 0 = buffer pointer (int), 1 = OpenCV Mat (numpy ndarray)
   # Note: must call Range(1) first to update source image conversion
 
   def Night(self, shift =1, fmt =1):
@@ -137,7 +139,7 @@ if __name__ == "__main__":
     if sys.argv[1].isdigit():
       sh = int(sys.argv[1])
     else:
-      print("argument = depth down-shift")
+      print("argument = depth down-shift (0-4: default = 1")
 
   # connect to sensor and make display window
   tof = TofCam()  

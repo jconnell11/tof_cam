@@ -19,8 +19,9 @@ include_directories(
 ## Build ##
 ###########
 
-# Set build type
+# Set build type and output locations
 set(CMAKE_BUILD_TYPE Release)	
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "lib")
 
 # Make shared library
 add_library(tof_cam SHARED
