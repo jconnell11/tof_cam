@@ -25,18 +25,17 @@
 # 
 # =========================================================================
 
-import numpy as np, cv2, os, sys
+import numpy as np, cv2, sys
 from ctypes import CDLL, POINTER, cast, c_ubyte, c_void_p
 
 # serial port number (only matters for Windows)
 port = 5
 
-# bind shared library
-here = os.path.dirname(__file__)       
+# bind shared library  
 if sys.platform == 'win32':
-  lib = CDLL(here + '/lib/tof_cam.dll')              # Windows
+  lib = CDLL('lib/tof_cam.dll')                  # Windows
 else:
-  lib = CDLL(here + '/lib/libtof_cam.so')            # Linux
+  lib = CDLL('lib/libtof_cam.so')                # Linux
 
 # define return types of image functions (buffer pointers)
 lib.tof_range.restype  = c_void_p
