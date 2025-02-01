@@ -138,7 +138,7 @@ if __name__ == "__main__":
     if sys.argv[1].isdigit():
       sh = int(sys.argv[1])
     else:
-      print("argument = depth down-shift (0-4: default = 1")
+      print("argument = depth down-shift (0-4: default = 1)")
 
   # connect to sensor and make display window
   tof = TofCam()  
