@@ -39,6 +39,9 @@
     <ClInclude Include="common\jhcGlobal.h">
       <Filter>Header Files\common</Filter>
     </ClInclude>
+    <ClInclude Include="tof_cam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interface\jhcSerial.cpp">

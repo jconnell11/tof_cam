@@ -24,6 +24,7 @@
     <ClInclude Include="Interface\jhcSerial.h" />
     <ClInclude Include="Interface\jms_x.h" />
     <ClInclude Include="jhcTofCam_win.h" />
+    <ClInclude Include="tof_cam.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interface\jhcSerial.cpp" />

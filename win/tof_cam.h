@@ -1,4 +1,4 @@
-// tof_cam.cpp : library for A010 Time-of-Flight camera interface
+// tof_cam_win.h : library for A010 Time-of-Flight camera interface
 //
 // Written by Jonathan H. Connell, jconnell@alum.mit.edu
 //
@@ -20,16 +20,17 @@
 // 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <jhcTofCam.h>
+#pragma once
 
 
-///////////////////////////////////////////////////////////////////////////
-//                          Global Variables                             //
-///////////////////////////////////////////////////////////////////////////
+// function declarations and link to library stub
 
-//= Class with interface driver and post-processing cleanup.
-
-static jhcTofCam tof;
+#ifdef TOFCAM_EXPORTS
+  #define DEXP __declspec(dllexport)
+#else
+  #define DEXP __declspec(dllimport)
+  #pragma comment(lib, "lib/tof_cam.lib")
+#endif
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -40,10 +41,7 @@ static jhcTofCam tof;
 // "port" is lower COMx number in Windows Device Manager (Linux ignores)
 // returns 1 if okay, 0 or negative for error
 
-extern "C" int tof_start (int port)
-{
-  return tof.Start(port);
-}
+extern "C" DEXP int tof_start (int port =3);
 
 
 //= Get a pointer to the most recent 16 bit depth image from sensor.
@@ -52,18 +50,12 @@ extern "C" int tof_start (int port)
 // typically 14.8 fps, image guaranteed unchanged until next Range() call
 // returns pixel buffer pointer, NULL if not ready or stream broken
 
-extern "C" const unsigned char *tof_range (int block)
-{
-  return tof.Range(block);
-}
+extern "C" DEXP const unsigned char *tof_range (int block =0);
 
 
 //= Stop background thread and close USB connection.
 
-extern "C" void tof_done ()
-{
-  tof.Done();
-}
+extern "C" DEXP void tof_done ();
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -72,47 +64,32 @@ extern "C" void tof_done ()
 
 //= Current range step (in mm) used by hardware sensor.
 
-extern "C" int tof_step () 
-{
-  return tof.Step();
-}
+extern "C" DEXP int tof_step (); 
 
 
 //= Get current raw sensor image for debugging.
 // Note: image used by processing - do not alter pixels!
 
-extern "C" const unsigned char *tof_sensor () 
-{
-  return tof.Sensor();
-}
+extern "C" DEXP const unsigned char *tof_sensor ();
 
 
 //= Get current median filtered image for debugging.
 // spatial filtering removes edge artifacts and shot noise
 // Note: image used by processing - do not alter pixels!
 
-extern "C" const unsigned char *tof_median ()
-{
-  return tof.Median();
-}
+extern "C" DEXP const unsigned char *tof_median ();
 
 
 //= Get current Kalman filtered image for debugging.
 // temporal filtering removes flickering and waves
 // Note: image used by processing - do not alter pixels!
 
-extern "C" const unsigned char *tof_kalman () 
-{
-  return tof.Kalman();
-}
+extern "C" DEXP const unsigned char *tof_kalman ();
 
 
 //= Make an 8 bit grayscale image where close things are BRIGHTER.
 // "sh" sets max range: 0 = 25cm, 1 = 51cm, 2 = 102cm, 3 = 204cm, 4 = 409cm 
 // Note: must call Range(1) first to update source image to converter
 
-extern "C" const unsigned char *tof_night (int sh)
-{
-  return tof.Night(sh);
-}
+extern "C" DEXP const unsigned char *tof_night (int sh =1);
 

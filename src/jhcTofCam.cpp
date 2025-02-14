@@ -4,7 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 //
-// Copyright 2024 Etaoin Systems
+// Copyright 2024-2025 Etaoin Systems
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -100,11 +100,7 @@ int jhcTofCam::Start (int port)
   // establish USB serial connection
   ok = -1;
   if (open_usb() <= 0)
-  {
-    pwr_cycle();                       // re-initialize
-    if (open_usb() <= 0)
-      return ok;
-  }
+    return ok;
 
   // configure and start sensor
   write(ser, "AT+DISP=3\r", 10);       // needs live display!
@@ -173,21 +169,6 @@ int jhcTofCam::open_usb ()
   if (tcsetattr(ser, TCSANOW, &tty) != 0) 
     return 0;
   return 1;
-}
-
-
-//= Recycle FTDI driver then reboot sensor itself. 
-// must do "sudo apt install uhubctl" for Raspberry Pi 4
-// Note: power cycles ALL devices connected via USB!
-
-void jhcTofCam::pwr_cycle () const
-{
-  printf(">>> jhcTofCam: Rebooting sensor connection ...\n");
-  system("sudo modprobe -r ftdi_sio");
-  system("sudo modprobe ftdi_sio");
-  system("sudo uhubctl -l2 -a0 > /dev/null");   
-  system("sudo uhubctl -l2 -a1 > /dev/null");
-  sleep(3);
 }
 
 
@@ -263,15 +244,9 @@ void *jhcTofCam::absorb (void *tof)
   {
     // get sensor pixels
     if (me->sync() <= 0)
-    {
-      printf(">>> jhcTofCam: Frame sync timeout!\n");
       break;
-    }
     if (me->fill_raw() <= 0)
-    {
-      printf(">>> jhcTofCam: Image pixels timeout!\n");
       break;
-    }
     
     // analyze and filter image
     me->auto_range();

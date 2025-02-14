@@ -4,7 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 //
-// Copyright 2024 Etaoin Systems
+// Copyright 2024-2025 Etaoin Systems
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,7 +79,8 @@ public:
   int sat, pct, ihi, cx0, cy0, cw, ch; 
 
   // temporal smoothing parameters
-  float f0, nv, vlim;
+  float f0, nv;
+  int vlim;
 
 
 // PUBLIC MEMBER FUNCTIONS
@@ -89,7 +90,7 @@ public:
   jhcTofCam ();
 
   // main functions
-  int Start (int port =5);
+  int Start (int port =3);
   const unsigned char *Range (int block =0);
   void Done ();
 

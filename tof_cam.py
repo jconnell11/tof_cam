@@ -25,11 +25,8 @@
 # 
 # =========================================================================
 
-import numpy as np, cv2, sys
+import numpy as np, cv2, sys, os, time
 from ctypes import CDLL, POINTER, cast, c_ubyte, c_void_p
-
-# serial port number (only matters for Windows)
-port = 5
 
 # bind shared library  
 if sys.platform == 'win32':
@@ -52,8 +49,20 @@ class TofCam:
   # connect to Time-of-Flight sensor over USB
   # returns 1 if okay, 0 or negative for problem
 
-  def Start(self):
+  def Start(self, port =3):
     return lib.tof_start(port)
+
+
+  # recycle FTDI driver then reboot sensor itself (Linux only)
+  # must do "sudo apt install uhubctl" to get utility
+  # Note: power cycles ALL devices connected via USB!
+
+  def Reboot(self):
+    os.system("sudo modprobe -r ftdi_sio > /dev/null 2>&1")
+    os.system("sudo modprobe ftdi_sio > /dev/null 2>&1")
+    os.system("sudo uhubctl -l2 -a0 > /dev/null")   
+    os.system("sudo uhubctl -l2 -a1 > /dev/null")
+    time.sleep(3)
 
 
   # get 16 bit range image, possibly waiting for new frame (block = 1)

@@ -4,7 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 //
-// Copyright 2024 Etaoin Systems
+// Copyright 2024-2025 Etaoin Systems
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 // 
 ///////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
@@ -192,15 +191,9 @@ pthread_ret jhcTofCam::absorb (void *tof)
   {
     // get sensor pixels
     if (me->sync() <= 0)
-    {
-      printf(">>> jhcTofCam: Frame sync timeout!\n");
       break;
-    }
     if (me->fill_raw() <= 0)
-    {
-      printf(">>> jhcTofCam: Image pixels timeout!\n");
       break;
-    }
     
     // analyze and filter image
     me->auto_range();

@@ -4,7 +4,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 //
-// Copyright 2024 Etaoin Systems
+// Copyright 2024-2025 Etaoin Systems
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -76,7 +76,8 @@ public:
   int sat, pct, ihi, cx0, cy0, cw, ch; 
 
   // temporal smoothing parameters
-  float f0, nv, vlim;
+  float f0, nv;
+  int vlim;
 
 
 // PUBLIC MEMBER FUNCTIONS
@@ -105,7 +106,6 @@ private:
 
   // main functions
   int open_usb ();
-  void pwr_cycle () const;
 
   // background thread functions
   static void *absorb (void *tof);
