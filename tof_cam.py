@@ -28,11 +28,17 @@
 import numpy as np, cv2, sys, os, time
 from ctypes import CDLL, POINTER, cast, c_ubyte, c_void_p
 
+
+# serial port number (only matters for Windows)
+port = 3
+
+
 # bind shared library  
 if sys.platform == 'win32':
   lib = CDLL('lib/tof_cam.dll')                  # Windows
 else:
   lib = CDLL('lib/libtof_cam.so')                # Linux
+
 
 # define return types of image functions (buffer pointers)
 lib.tof_range.restype  = c_void_p
@@ -49,7 +55,7 @@ class TofCam:
   # connect to Time-of-Flight sensor over USB
   # returns 1 if okay, 0 or negative for problem
 
-  def Start(self, port =3):
+  def Start(self):
     return lib.tof_start(port)
 
 
@@ -152,8 +158,11 @@ if __name__ == "__main__":
   # connect to sensor and make display window
   tof = TofCam()  
   if tof.Start() <= 0:
-    print("Could not connect to TOF sensor!")
-    sys.exit(0)
+    print("Power-cycling USB port ...")
+    tof.Reboot()
+    if tof.Start() <= 0:
+      print("Could not connect to TOF sensor!")
+      sys.exit(0)
   cv2.namedWindow("Night")
   cv2.moveWindow("Night", 10, 10)
 

@@ -17,9 +17,9 @@ This system was developed for a [robot](https://github.com/jconnell11/Ganbei) wi
     cmake .
     make
 
-This will create the library [libtof_cam.so](lib/libtof_cam.so) and the executables [tof_save](tof_save) and [tof_show](tof_show). The [save utility](src/tof_save.cpp) will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the [show utility](src/tof_show.cpp) will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing:
+This will create the library [libtof_cam.so](lib/libtof_cam.so) and the executables [tof_save](tof_save) and [tof_show](tof_show). The [save utility](src/tof_save.cpp) will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the [show utility](src/tof_show.cpp) will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing the command below (use ^C to exit cleanly):
 
-    python3 tof_cam.py
+    python3 tof_cam.py 1
 
 All these programs make use of the C++ base class [jhcTofCam](src/jhcTofCam.cpp). This contains the USB serial interface, background image processing, and an automatic range-step setting algorithm. Generally, for image analysis such as object detection, you will want to use the image returned by "Range" (also in Python). You can suppress motion blanking by increasing the jhcTofCam::vlim value (255 = disabled).
 
@@ -29,9 +29,9 @@ Note: If you happen to use this on Raspberry Pi, be aware that the onboard USB h
 
 ### Windows
 
-There is also a [DLL version](lib/tof_cam.dll) that runs with Windows, however you need to find the serial port associated with your sensor. Plug it into a USB port then open Device Manager and look for a pair of non-descript "Ports". Use the __lower__ of these two numbers for the "port" argument in the Python function "Start" (part of the TofCam class in [tof_cam.py](tof_cam.py)). 
+There is also a [DLL version](lib/tof_cam.dll) that runs with Windows, however you need to find the serial port associated with your sensor. Plug it into a USB port then open Device Manager and look for a pair of non-descript "Ports". In [tof_cam.py](tof_cam.py) set the "port" variable to the __lower__ of these two numbers (or set "tof_cam.port" in your main program). 
 
-To run the demo, open a terminal window, cd to the "tof_cam" directory, then type the command below. The argument (1-4) sets the maximum range for the grayscale image.  Note that to display images you need to have [OpenCV](https://opencv.org/releases/) installed (the "Windows" version, obviously).
+To run the demo, open a terminal window, cd to the "tof_cam" directory, then type the command below (use ^C to exit cleanly). The __argument__ (1-4) sets the maximum range for the grayscale image.  Note that to display images you need to have [OpenCV](https://opencv.org/releases/) installed (the "Windows" version, obviously).
 
     py tof_cam.py 1
 
