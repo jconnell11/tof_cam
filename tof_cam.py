@@ -59,18 +59,6 @@ class TofCam:
     return lib.tof_start(port)
 
 
-  # recycle FTDI driver then reboot sensor itself (Linux only)
-  # must do "sudo apt install uhubctl" to get utility
-  # Note: power cycles ALL devices connected via USB!
-
-  def Reboot(self):
-    os.system("sudo modprobe -r ftdi_sio > /dev/null 2>&1")
-    os.system("sudo modprobe ftdi_sio > /dev/null 2>&1")
-    os.system("sudo uhubctl -l2 -a0 > /dev/null")   
-    os.system("sudo uhubctl -l2 -a1 > /dev/null")
-    time.sleep(3)
-
-
   # get 16 bit range image, possibly waiting for new frame (block = 1)
   # image is 100x100 pixels with depth in 0.25mm steps
   # image fmt: 0 = buffer pointer (int), 1 = OpenCV Mat (numpy ndarray)
@@ -158,11 +146,8 @@ if __name__ == "__main__":
   # connect to sensor and make display window
   tof = TofCam()  
   if tof.Start() <= 0:
-    print("Power-cycling USB port ...")
-    tof.Reboot()
-    if tof.Start() <= 0:
-      print("Could not connect to TOF sensor!")
-      sys.exit(0)
+    print("Could not connect to TOF sensor!")
+    sys.exit(0)
   cv2.namedWindow("Night")
   cv2.moveWindow("Night", 10, 10)
 

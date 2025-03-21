@@ -155,11 +155,13 @@ const unsigned char *jhcTofCam::Range (int block)
 
 void jhcTofCam::Done ()
 {
+  abstime_t one_sec;
+
   // stop receiver and pre-processor thread
   if (run > 0)
   {
     run = 0;                                
-    pthread_join(hoover, NULL);   
+    pthread_timedjoin_np(hoover, 0, abstime_wait(&one_sec, 1000));   
   }
 
   // stop transmitter and release serial port
@@ -181,29 +183,37 @@ void jhcTofCam::Done ()
 ///////////////////////////////////////////////////////////////////////////
 
 //= Background thread continually receives serial bytes into raw buffers.
-// also automatically adjusts range resolution and filters pixels
 
 pthread_ret jhcTofCam::absorb (void *tof)
 {
   jhcTofCam *me = (jhcTofCam *) tof;
 
-  while (me->run > 0) 
+  me->main_loop();           
+  return NULL;                            
+}
+
+
+//= Main image acquisition and processing loop.
+// also automatically adjusts range resolution and filters pixels
+
+void jhcTofCam::main_loop ()
+{
+  while (run > 0) 
   {
     // get sensor pixels
-    if (me->sync() <= 0)
+    if (sync() <= 0)
       break;
-    if (me->fill_raw() <= 0)
+    if (fill_raw() <= 0)
       break;
     
     // analyze and filter image
-    me->auto_range();
-    me->median5x5();
-    me->flywheel();
-    me->reformat();
-    me->swap_bufs();
+    auto_range();
+    median5x5();
+    flywheel();
+    reformat();
+    swap_bufs();
   }
-  me->ok = 0;                          // stream ended               
-  return NULL;                            
+  ok = 0;                    // stream ended   
 }
 
 
@@ -218,8 +228,11 @@ int jhcTofCam::sync ()
   // find start of next packet
   while (1)
   {      
+    // punt if gibberish (sync never found)
+    if (start++ > 20000)
+      return 0;
+
     // start code = 0x00 0xFF
-    start++;
     if ((b = ser.Rcv()) < 0)
       return 0;
     if (b != 0x00)

@@ -109,6 +109,7 @@ private:
 
   // background thread functions
   static pthread_ret absorb (void *tof);
+  void main_loop ();
   int sync ();
   int fill_raw ();
   void swap_bufs ();
