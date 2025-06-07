@@ -37,8 +37,16 @@ To run the demo, open a terminal window, cd to the "tof_cam" directory, then typ
 
 If you want to make changes to the DLL, the [win](win) directory has the associated Visual Studio Community 2022 project ("tof_cam.sln") and OS-specific source files. Be sure to compile the "Release" configuration and move any new DLL version to your application "lib" subdirectory if you intend to use it with Python. Of course, you can also use the DLL natively in a C/C++ program with the header [tof_cam.h](win/tof_cam.h).  
 
+### Bigger Images
+
+You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://github.com/jconnell11/Ganbei) the robot.
+
+![range](sample/scene_rng.bmp)
+
+![color](sample/scene_col.bmp)
+
 ---
 
-February 2025 - Jonathan Connell - jconnell@alum.mit.edu
+June 2025 - Jonathan Connell - jconnell@alum.mit.edu
 
 
