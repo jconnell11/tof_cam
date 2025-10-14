@@ -17,7 +17,7 @@ This system was developed for a [robot](https://github.com/jconnell11/Ganbei) wi
     cmake .
     make
 
-This will create the library [libtof_cam.so](lib/libtof_cam.so) and the executables [tof_save](tof_save) and [tof_show](tof_show). The [save utility](src/tof_save.cpp) will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the [show utility](src/tof_show.cpp) will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing the command below (use ^C to exit cleanly):
+This will create the library [libtof_cam.so](lib/libtof_cam.so) and the executables [tof_save](tof_save), [tof_show](tof_show), and [tof_vga](tof_vga). The [save utility](src/tof_save.cpp) will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the [show utility](src/tof_show.cpp) will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing the command below (use ^C to exit cleanly):
 
     python3 tof_cam.py 1
 
@@ -25,7 +25,7 @@ All these programs make use of the C++ base class [jhcTofCam](src/jhcTofCam.cpp)
 
 The returned image is 100x100 pixels with 16 bit depth values in increments of 0.25mm (similar to Kinect 360). Empirically, the field-of-view is 66.6 degrees both horizontally and vertically, giving a focal length of 76.1 pixels. The sensor itself can see from about 50mm (2 inches) to 2.4m (8 feet) and runs at about 15 fps.
 
-Note: If you happen to use this on Raspberry Pi, be aware that the onboard USB hub is quirky. Plugging in other devices, such as a [Waveshare USB sound card](https://www.amazon.com/gp/product/B08R38TXXL), can crash the TOF sensor! The solution is to add  a [USB splitter](https://www.amazon.com/dp/B07ZZ9ZSW9) (or hub) and plug one or the other (or both) peripherals into this instead.
+__Note:__ The USB cable that ships with the sensor can be __flakey__ and is better replaced. Also, ff you happen to use this on Raspberry Pi, be aware that the onboard USB hub is __quirky__. Plugging in other devices, such as a [Waveshare USB sound card](https://www.amazon.com/gp/product/B08R38TXXL), can crash the TOF sensor! The solution is to add  a [USB splitter](https://www.amazon.com/dp/B07ZZ9ZSW9) (or hub) and plug one or the other (or both) peripherals into this instead. 
 
 ### Windows
 
@@ -39,7 +39,7 @@ If you want to make changes to the DLL, the [win](win) directory has the associa
 
 ### Bigger Images
 
-You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://youtu.be/ncSaZPBFY3k) the robot that is used for manipulation.
+You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://youtu.be/ncSaZPBFY3k) the robot that is used for manipulation. Similar images (both grayscale and interpolated depth) can be produced by the sample program [tof_vga](src/tof_vga.cpp).
 
 ![range](sample/scene_rng.bmp)
 
@@ -47,6 +47,6 @@ You can use bilinear interpolation to expand the range images to VGA size so as 
 
 ---
 
-June 2025 - Jonathan Connell - jconnell@alum.mit.edu
+October 2025 - Jonathan Connell - jconnell@alum.mit.edu
 
 

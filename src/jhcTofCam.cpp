@@ -132,10 +132,14 @@ int jhcTofCam::open_usb ()
 {
   struct termios tty;
 
-  // open USB connection to camera
+  // open USB connection to camera (try both USB0 and USB1)
   ser = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
   if (ser < 0)
-    return -1;
+  {
+    ser = open("/dev/ttyUSB1", O_RDWR | O_NOCTTY | O_NDELAY);
+    if (ser < 0)
+      return -1;
+  }
   fcntl(ser, F_SETFL, 0);              // clear status
   if (tcgetattr(ser, &tty) != 0) 
     return 0;

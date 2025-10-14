@@ -23,7 +23,7 @@ include_directories(
 set(CMAKE_BUILD_TYPE Release)	
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "lib")
 
-# Make shared library
+# Make shared library -------------------------------------
 add_library(tof_cam SHARED
   src/tof_cam.cpp
   src/jhcTofCam.cpp
@@ -34,8 +34,7 @@ target_link_libraries(tof_cam
   pthread
 )
 
-
-# Make test program to save images
+# Make test program to save images ------------------------
 add_executable(tof_save
   src/tof_save.cpp
   src/jhcTofCam.cpp
@@ -46,8 +45,7 @@ target_link_libraries(tof_save
   pthread
 )
 
-
-# Make test program to show images
+# Make test program to show images ------------------------
 add_executable(tof_show
   src/tof_show.cpp
   src/jhcTofCam.cpp
@@ -55,6 +53,18 @@ add_executable(tof_show
 
 # Required input libraries for showing images
 target_link_libraries(tof_show
+  pthread
+  ${OpenCV_LIBS}
+)
+
+# Make test program to create VGA sized images ------------
+add_executable(tof_vga
+  src/tof_vga.cpp
+  src/jhcTofCam.cpp
+)
+
+# Required input libraries for VGA sample program
+target_link_libraries(tof_vga
   pthread
   ${OpenCV_LIBS}
 )

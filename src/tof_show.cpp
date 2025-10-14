@@ -99,12 +99,13 @@ int main (int argc, char *argv[])
     mono_rot3(kal.data, tof.Kalman());  
     mono_rot3(nite.data, tof.Night(shift));  
 
-    // display new frames
+    // display new frames and pump update message
     cv::imshow("Sensor", raw);    
     cv::imshow("Median", med); 
     cv::imshow("Kalman", kal);  
     cv::imshow("Night", nite);       
-    cv::waitKey(1);                    // pump update message
+    if ((int) cv::waitKey(1) > 0)
+      break;                
   }
 
   // only gets here on failure
