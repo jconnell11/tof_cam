@@ -39,7 +39,7 @@ If you want to make changes to the DLL, the [win](win) directory has the associa
 
 ### Bigger Images
 
-You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://youtu.be/ncSaZPBFY3k) the robot that is used for manipulation. Similar images (both grayscale and interpolated depth) can be produced by the sample program [tof_vga](src/tof_vga.cpp).
+You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://youtu.be/ncSaZPBFY3k) the robot that is used for manipulation. Similar images (both grayscale and interpolated depth) can be produced by the sample program [tof_vga](src/tof_vga.cpp). This code is reasonably fast and attempts to avoid interpolating across big depth discontinuities.
 
 ![range](sample/scene_rng.bmp)
 
