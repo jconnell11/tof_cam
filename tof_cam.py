@@ -9,7 +9,7 @@
 #
 # =========================================================================
 #
-# Copyright 2024-2025 Etaoin Systems
+# Copyright 2024-2026 Etaoin Systems
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -148,21 +148,45 @@ if __name__ == "__main__":
   if tof.Start() <= 0:
     print("Could not connect to TOF sensor!")
     sys.exit(0)
-  cv2.namedWindow("Night")
+  cv2.namedWindow("Night", flags=cv2.WINDOW_GUI_NORMAL)
+  cv2.resizeWindow("Night", 300, 300)
+  cv2.moveWindow("Night", 10, 10)
+  cv2.waitKey(500)
   cv2.moveWindow("Night", 10, 10)
 
   # receive frames and display them
   print("Streaming images (%d cm max) ..." % (25 << sh))
+  i = 0
+  start = time.time();
+  t0 = start
+  ft = start
   try:
     while tof.Range(1) is not None:
+
+      # grab image
       img = tof.Night(sh)
+      i += 1
+
+      # update rate estimate
+      now = time.time()
+      ms = 1000 * (now - ft)
+      ft = now
+      if ms > 200.0:
+        print("-- frame %5.1f ms" % (ms))
+      if (i % 30) == 0:
+        print("%3.1f fps" % (30.0 / (now - t0)))
+        t0 = now 
+
+      # display image
       rot = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
       big = cv2.resize(rot, (300, 300), interpolation=cv2.INTER_NEAREST) 
       cv2.imshow("Night", big) 
       cv2.waitKey(1)                   # pump update message
   except KeyboardInterrupt:
-    print("")
+    print()
 
   # shutdown after error or Ctrl-C
-  print("Sensor stopped")
+  stop = time.time();
   tof.Done()
+  print("Sensor stopped - %d frames at %4.2f fps" % (i, i / (stop - start)))
+
