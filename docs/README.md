@@ -17,11 +17,11 @@ This system was developed for a [robot](https://github.com/jconnell11/Ganbei) wi
     cmake .
     make
 
-This will create the library [libtof_cam.so](lib/libtof_cam.so) and the executables [tof_save](tof_save), [tof_show](tof_show), and [tof_vga](tof_vga). The [save utility](src/tof_save.cpp) will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the [show utility](src/tof_show.cpp) will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing the command below (use ^C to exit cleanly):
+This will create the library [libtof_cam.so](../project/lib/libtof_cam.so) and the executables [tof_save](../project/tof_save), [tof_show](../project/tof_show), and [tof_vga](../project/tof_vga). The [save utility](../project/src/tof_save.cpp) will just grab a number of sequential frames from the sensor and store the raw versions as bitmap files. By contrast, the [show utility](../project/src/tof_show.cpp) will pop up 4 windows displaying live images of the various stages of processing. There is also a Python [wrapper](../project/tof_cam.py) for the system that will produce OpenCV images. You can run a simple test of this by typing the command below (use ^C to exit cleanly):
 
     python3 tof_cam.py 1
 
-All these programs make use of the C++ base class [jhcTofCam](src/jhcTofCam.cpp). This contains the USB serial interface, background image processing, and an automatic range-step setting algorithm. Generally, for image analysis such as object detection, you will want to use the image returned by "Range" (also in Python). You can suppress motion blanking by increasing the jhcTofCam::vlim value (255 = disabled).
+All these programs make use of the C++ base class [jhcTofCam](../project/src/jhcTofCam.cpp). This contains the USB serial interface, background image processing, and an automatic range-step setting algorithm. Generally, for image analysis such as object detection, you will want to use the image returned by "Range" (also in Python). You can suppress motion blanking by increasing the jhcTofCam::vlim value (255 = disabled).
 
 The returned image is 100x100 pixels with 16 bit depth values in increments of 0.25mm (similar to Kinect 360). Empirically, the field-of-view is 66.6 degrees both horizontally and vertically, giving a focal length of 76.1 pixels. The sensor itself can see from about 50mm (2 inches) to 2.4m (8 feet) and runs at about 15 fps.
 
@@ -29,24 +29,24 @@ __Note:__ The USB cable that ships with the sensor can be __flakey__ and is bett
 
 ### Windows
 
-There is also a [DLL version](lib/tof_cam.dll) that runs with Windows, however you need to find the serial port associated with your sensor. Plug it into a USB port then open Device Manager and look for a pair of non-descript "Ports". In [tof_cam.py](tof_cam.py) set the "port" variable to the __lower__ of these two numbers (or set "tof_cam.port" in your main program). 
+There is also a [DLL version](../project/lib/tof_cam.dll) that runs with Windows, however you need to find the serial port associated with your sensor. Plug it into a USB port then open Device Manager and look for a pair of non-descript "Ports". In [tof_cam.py](../project/tof_cam.py) set the "port" variable to the __lower__ of these two numbers (or set "tof_cam.port" in your main program). 
 
 To run the demo, open a terminal window, cd to the "tof_cam" directory, then type the command below (use ^C to exit cleanly). The __argument__ (1-4) sets the maximum range for the grayscale image.  Note that to display images you need to have [OpenCV](https://opencv.org/releases/) installed (the "Windows" version, obviously).
 
     py tof_cam.py 1
 
-If you want to make changes to the DLL, the [win](win) directory has the associated Visual Studio Community 2022 project ("tof_cam.sln") and OS-specific source files. Be sure to compile the "Release" configuration and move any new DLL version to your application "lib" subdirectory if you intend to use it with Python. Of course, you can also use the DLL natively in a C/C++ program with the header [tof_cam.h](win/tof_cam.h).  
+If you want to make changes to the DLL, the [win](../project/win) directory has the associated Visual Studio Community 2022 project ("tof_cam.sln") and OS-specific source files. Be sure to compile the "Release" configuration and move any new DLL version to your application "lib" subdirectory if you intend to use it with Python. Of course, you can also use the DLL natively in a C/C++ program with the header [tof_cam.h](../project/win/tof_cam.h).  
 
 ### Bigger Images
 
-You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://youtu.be/ncSaZPBFY3k) the robot that is used for manipulation. Similar images (both grayscale and interpolated depth) can be produced by the sample program [tof_vga](src/tof_vga.cpp). This code is reasonably fast and attempts to avoid interpolating across big depth discontinuities.
+You can use bilinear interpolation to expand the range images to VGA size so as to be compatible with code written for Kinect or Astra sensors. Shown below is an actual tabletop scene produced by [Herbie](https://youtu.be/ncSaZPBFY3k) the robot that is used for manipulation. Similar images (both grayscale and interpolated depth) can be produced by the sample program [tof_vga](../project/src/tof_vga.cpp). This code is reasonably fast and attempts to avoid interpolating across big depth discontinuities.
 
-![range](sample/scene_rng.bmp)
+![range](scene_rng.bmp)
 
-![color](sample/scene_col.bmp)
+![color](scene_col.bmp)
 
 ---
 
-October 2025 - Jonathan Connell - jconnell@alum.mit.edu
+June 2026 - Jonathan Connell - jconnell@alum.mit.edu
 
 
