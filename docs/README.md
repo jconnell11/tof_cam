@@ -1,5 +1,5 @@
 # tof_cam
-## Compact imaging depth sensor 
+## Compact Imaging Depth Sensor 
 
 ![MaixSense A010](MaixSense_A010.jpg)
 
